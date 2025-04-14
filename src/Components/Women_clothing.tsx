@@ -2,6 +2,7 @@ import { Product } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import CardProductHome from "./CardProductHome";
 
 async function getJewelry(): Promise<Product[]> {
   try {
@@ -19,38 +20,53 @@ async function getJewelry(): Promise<Product[]> {
 async function Women_clothing() {
   const womenClothing = await getJewelry();
   return (
-    <section className="mt-14">
-      <h1 className="font-bold p-1 text-4xl">Womens` Clothing</h1>
-      <article className="h-5/6  bg-slate-300 gap-4 rounded-2xl p-5 flex text-center">
-        {womenClothing.slice(0, 4).map((product) => (
-          <section className="rounded-xl p-2 bg-white w-52 " key={product.id}>
-            <Link href={`/product/${product.id}`}>
-              {/* <img
-                src={product.image}
-                alt={product.title}
-                className="w-52 h-40"
-              /> */}
-              <Image
-                width={208}
-                height={208}
-                className="w-52 h-40"
-                src={product.image}
-                alt={product.title}
-              />
-            </Link>
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-8">
+        Womens` Clothing
+      </h1>
 
-            <div className="flex flex-col justify-between h-1/3">
-              <Link href={`/product/${product.id}`}>
-                <h3 className="text-ellipsis text-pretty w-full">
-                  {product.title}
-                </h3>
-              </Link>
-              <h4>${product.price}</h4>
-            </div>
-          </section>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {womenClothing.map((product) => (
+          <CardProductHome
+            key={product.id}
+            product={product}
+            priority={product.id <= 4}
+          />
         ))}
-      </article>
+      </div>
     </section>
+    // <section className="mt-14">
+    //   <h1 className="font-bold p-1 text-4xl">Womens` Clothing</h1>
+    //   <article className="h-5/6  bg-slate-300 gap-4 rounded-2xl p-5 flex text-center">
+    //     {womenClothing.slice(0, 4).map((product) => (
+    //       <section className="rounded-xl p-2 bg-white w-52 " key={product.id}>
+    //         <Link href={`/product/${product.id}`}>
+    //           {/* <img
+    //             src={product.image}
+    //             alt={product.title}
+    //             className="w-52 h-40"
+    //           /> */}
+    //           <Image
+    //             width={208}
+    //             height={208}
+    //             className="w-52 h-40"
+    //             src={product.image}
+    //             alt={product.title}
+    //           />
+    //         </Link>
+
+    //         <div className="flex flex-col justify-between h-1/3">
+    //           <Link href={`/product/${product.id}`}>
+    //             <h3 className="text-ellipsis text-pretty w-full">
+    //               {product.title}
+    //             </h3>
+    //           </Link>
+    //           <h4>${product.price}</h4>
+    //         </div>
+    //       </section>
+    //     ))}
+    //   </article>
+    // </section>
   );
 }
 

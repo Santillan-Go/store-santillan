@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 function page() {
   return (
     <section className="flex flex-col items-center">
-      <h1 className="text-center font-bold text-4xl">Log in</h1>
+      <h1 className="text-center font-bold text-4xl mb-1">Log in</h1>
 
       <FormLogin />
     </section>

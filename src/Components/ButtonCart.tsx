@@ -8,17 +8,17 @@ import React from "react";
 function ButtonCart({
   product,
   session, // Add session prop here to get user ID for adding to cart.
-  handleClick
+  handleClick,
 }: {
   product: CartProduct;
-    session: { user: any };
+  session: { user: any };
   handleClick: () => void; // Add handleClick prop here to trigger the cart popup.
 }) {
   const dispatch = useAppDispatch();
   console.log(product);
   return (
     <button
-      className=" w-4/5 h-10  rounded-lg font-bold text-white bg-blue-400"
+      className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 px-6 py-3 rounded-full font-medium transition-colors duration-200"
       onClick={handleClick}
     >
       <ShoppingCartCheckoutRounded />

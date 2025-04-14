@@ -5,3 +5,8 @@
 img {
   width: 100%;
 }
+
+body {
+  background: linear-gradient(to bottom right, #d7d8d9, #d0dae5);
+  min-height: 100vh;
+}

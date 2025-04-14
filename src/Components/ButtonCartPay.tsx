@@ -31,7 +31,7 @@ function ButtonCartPay({
   return (
     <button
       onClick={handlePayment}
-      className="w-full rounded-lg p-1 bg-sky-400 text-white font-bold text-center text-xl"
+      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-full transition-colors duration-200"
     >
       Checkout
     </button>

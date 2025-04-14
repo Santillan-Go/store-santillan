@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { signIn } from "next-auth/react";
+import Loader from "./Loader";
 
 interface InputElements {
   name: string;
@@ -10,119 +11,150 @@ interface InputElements {
   confirmpassword: string;
 }
 function FormRegister() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<String>("");
+  const router = useRouter();
   const {
     register,
-
     handleSubmit,
     formState: { errors },
   } = useForm<InputElements>();
-  const router = useRouter();
-  const [error, setError] = useState<String>("");
+
   const onSubmit: SubmitHandler<InputElements> = async (data) => {
+    setIsLoading(true);
     const { confirmpassword: _, ...body } = data;
+
     if (data.confirmpassword != body.password) {
-      return setError("Passwords do not match");
-    }
-    setError("");
-    const res = await fetch(`/api/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-      const resJSON = await res.json();
-      setError(resJSON.message);
+      setError("Passwords do not match");
+      setIsLoading(false);
       return;
     }
 
-    //const resJSON = await res.json();
-    router.push("/login");
+    setError("");
+    try {
+      const res = await fetch(`/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const resJSON = await res.json();
+        setError(resJSON.message);
+        return;
+      }
+
+      router.push("/login");
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-1/4">
-      <label htmlFor="name" className="text-gray-400 font-bold block mb-1">
-        name
-      </label>
-      <input
-        type="text"
-        id="name"
-        className="bg-slate-800 w-full text-blue-400 p-2 text-2xl mb-2 block "
-        {...register("name", {
-          required: {
-            value: true,
-            message: "name is required",
-          },
-          minLength: {
-            value: 3,
-            message: "name must be at least 3 characters",
-          },
-        })}
-      />
-      {errors.name && (
-        <span className="text-red-600 font-bold block text-center">
-          {errors.name.message || ""}
-        </span>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg relative"
+    >
+      {isLoading && (
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-2xl">
+          <Loader />
+        </div>
       )}
+      <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+        Create Account
+      </h2>
 
-      <label htmlFor="password" className="text-gray-400 font-bold block mb-1">
-        Password
-      </label>
-      <input
-        type="password"
-        id="password"
-        className="bg-slate-800 w-full  text-blue-400 p-2 text-2xl mb-2 block"
-        {...register("password", {
-          required: {
-            value: true,
-            message: "Password is required",
-          },
-          minLength: {
-            value: 6,
-            message: "Password must be at least 6 characters",
-          },
-        })}
-      />
-      {errors.password && (
-        <span className="text-red-600 font-bold block text-center">
-          {errors.password.message}
-        </span>
-      )}
-      <label
-        htmlFor="confirmPassword"
-        className="text-gray-400 font-bold block mb-1"
-      >
-        Confirm Password
-      </label>
-      <input
-        type="password"
-        id="confirmPassword"
-        className="bg-slate-800 w-full  text-blue-400 p-2 text-2xl mb-2 block"
-        {...register("confirmpassword", {
-          required: {
-            value: true,
-            message: "Confirm Password is required",
-          },
-        })}
-      />
+      <div className="space-y-6">
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Username
+          </label>
+          <input
+            type="text"
+            id="name"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            placeholder="Enter your username"
+            {...register("name", {
+              required: "Username is required",
+              minLength: {
+                value: 3,
+                message: "Username must be at least 3 characters",
+              },
+            })}
+          />
+          {errors.name && (
+            <p className="mt-2 text-sm text-red-600">{errors.name.message}</p>
+          )}
+        </div>
 
-      {errors.confirmpassword && (
-        <span className="text-red-600 font-bold block text-center ">
-          {errors.confirmpassword.message}
-        </span>
-      )}
-      <div className="w-full flex flex-col justify-center items-center gap-2">
-        <input
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            placeholder="Enter your password"
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
+          />
+          {errors.password && (
+            <p className="mt-2 text-sm text-red-600">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            id="confirmPassword"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            placeholder="Confirm your password"
+            {...register("confirmpassword", {
+              required: "Please confirm your password",
+            })}
+          />
+          {errors.confirmpassword && (
+            <p className="mt-2 text-sm text-red-600">
+              {errors.confirmpassword.message}
+            </p>
+          )}
+        </div>
+
+        <button
           type="submit"
-          value={"Register"}
-          className="bg-blue-500 text-white font-bold text-2xl  hover:bg-blue-700 hover:cursor-pointer w-1/2 text-center  rounded p-1 ml-auto mr-auto block "
-        />
+          className="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+        >
+          Create Account
+        </button>
+
         {error && (
-          <p className="text-red-500 font-bold text-center text-2xl w-full ">
-            {error}
-          </p>
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600 text-center">{error}</p>
+          </div>
         )}
       </div>
     </form>
@@ -137,91 +169,121 @@ interface InputsLogin {
   confirmpassword: string;
 }
 export function FormLogin() {
-  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<String>("");
   const router = useRouter();
   const {
     register,
-
     handleSubmit,
     formState: { errors },
   } = useForm<InputsLogin>();
 
   const onSubmit: SubmitHandler<InputsLogin> = async (data) => {
-    const res: any = await signIn("credentials", {
-      name: data.name,
-      password: data.password,
-      redirect: false,
-    });
-    console.log(res);
-    console.log(res);
-    if (res.error) {
-      setError(res.error);
-      return;
-    }
-    if (res.ok) {
-      router.push("/");
-      router.refresh();
+    setIsLoading(true);
+    setError("");
+    try {
+      const res: any = await signIn("credentials", {
+        name: data.name,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (res.error) {
+        setError(res.error);
+        return;
+      }
+
+      if (res.ok) {
+        router.push("/");
+        router.refresh();
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-1/4 ">
-      <label htmlFor="name" className="text-gray-400 font-bold block mb-1">
-        name
-      </label>
-      <input
-        type="text"
-        id="name"
-        className="bg-slate-800 w-full text-blue-400 p-2 text-2xl mb-2 block "
-        {...register("name", {
-          required: {
-            value: true,
-            message: "name is required",
-          },
-          minLength: {
-            value: 3,
-            message: "name must be at least 3 characters",
-          },
-        })}
-      />
-      {errors.name && (
-        <span className="text-red-600 font-bold block text-center">
-          {errors.name.message || ""}
-        </span>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg relative"
+    >
+      {isLoading && (
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-2xl">
+          <Loader />
+        </div>
       )}
-      <label htmlFor="password" className="text-gray-400 font-bold block mb-1">
-        Password
-      </label>
-      <input
-        type="password"
-        id="password"
-        className="bg-slate-800 w-full text-blue-400 p-2 text-2xl mb-2 block"
-        {...register("password", {
-          required: {
-            value: true,
-            message: "Password is required",
-          },
-          minLength: {
-            value: 6,
-            message: "Password must be at least 6 characters",
-          },
-        })}
-      />
-      {errors.password && (
-        <span className="text-red-600 font-bold block text-center">
-          {errors.password.message}
-        </span>
-      )}
-      <input
-        type="submit"
-        value={"Log in"}
-        className="bg-blue-500 text-white font-bold text-2xl  hover:bg-blue-700 hover:cursor-pointer w-1/2 text-center  rounded p-1 ml-auto mr-auto block "
-      />
-      {error && (
-        <p className="text-red-500 font-bold text-center text-2xl w-full ">
-          {error}
-        </p>
-      )}
+      <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+        Welcome Back
+      </h2>
+
+      <div className="space-y-6">
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Username
+          </label>
+          <input
+            type="text"
+            id="name"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            placeholder="Enter your username"
+            {...register("name", {
+              required: "Username is required",
+              minLength: {
+                value: 3,
+                message: "Username must be at least 3 characters",
+              },
+            })}
+          />
+          {errors.name && (
+            <p className="mt-2 text-sm text-red-600">{errors.name.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            placeholder="Enter your password"
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
+          />
+          {errors.password && (
+            <p className="mt-2 text-sm text-red-600">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+        >
+          Sign In
+        </button>
+
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600 text-center">{error}</p>
+          </div>
+        )}
+      </div>
     </form>
   );
 }

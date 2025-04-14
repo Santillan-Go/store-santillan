@@ -41,19 +41,22 @@ function FormSearch() {
   };
 
   return (
-    <form className="w-80  flex justify-evenly" onSubmit={handleSearch}>
-      <input
-        type="search"
-        name="query"
-        autoComplete="off"
-        className="w-60 p-1 rounded-lg text-black pl-1"
-        defaultValue={getValue()}
-      />
+    <form className="w-full flex items-center gap-2" onSubmit={handleSearch}>
+      <div className="relative flex-1">
+        <input
+          type="search"
+          name="query"
+          autoComplete="off"
+          className="w-full px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-gray-800"
+          defaultValue={getValue()}
+          placeholder="Search products..."
+        />
+      </div>
       <button
         type="submit"
-        className="w-14 font-bold  border rounded-lg bg-transparent hover:cursor-pointer hover:bg-gray-200 hover:text-black"
+        className="p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
       >
-        <Search />
+        <Search className="w-5 h-5" />
       </button>
     </form>
   );

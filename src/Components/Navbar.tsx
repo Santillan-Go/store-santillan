@@ -38,7 +38,7 @@ function Navbar({ session, cartUser }: Props) {
   return (
     <nav className="flex gap-5">
       <Link href={"/"}>
-        <Home className="w-8 h-8" />
+        <Home className="w-8 h-8 text-blue-600" />
       </Link>
       {!session?.user && (
         <>
@@ -49,7 +49,7 @@ function Navbar({ session, cartUser }: Props) {
 
       <Link href={"/cart"}>
         <Badge badgeContent={authState.quantity} color="primary">
-          <ShoppingCart className="w-8 h-8" />
+          <ShoppingCart className="w-8 h-8 text-blue-600" />
         </Badge>
       </Link>
 

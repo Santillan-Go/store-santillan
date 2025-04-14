@@ -23,7 +23,7 @@ function ButtonBuy({ product, setLoading }: Props) {
   };
   return (
     <button
-      className="w-4/5  h-10 rounded-lg font-bold text-white bg-blue-400 text-center "
+      className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-medium transition-colors duration-200"
       onClick={payment}
     >
       Buy

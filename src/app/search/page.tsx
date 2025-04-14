@@ -1,3 +1,4 @@
+import CardProductHome from "@/Components/CardProductHome";
 import { Product } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -51,37 +52,11 @@ async function Search({
 
       <section className="grid grid-cols-4 w-full p-7 rounded-2xl gap-5 justify-center  ">
         {products.map((product) => (
-          <article
+          <CardProductHome
             key={product.id}
-            className="bg-slate-300 rounded-2xl p-2 flex flex-col items-center"
-          >
-            <Link href={`/product/${product.id}`}>
-              {" "}
-              {/* <img
-                src={product.image}
-                alt={product.title}
-                className="h-28 w-28  rounded-lg"
-              /> */}
-              <Image
-                width={208}
-                height={208}
-                src={product.image}
-                alt={product.title}
-                className="h-28 w-28  rounded-lg"
-              />
-            </Link>
-
-            <Link
-              className="w-full text-center text-ellipsis overflow-hidden whitespace-nowrap  hover:text-gray-400 "
-              href={`/product/${product.id}`}
-            >
-              <h4 className="w-full text-center text-ellipsis overflow-hidden whitespace-nowrap">
-                {product.title}
-              </h4>
-            </Link>
-
-            <p className="w-full text-center ">${product.price}</p>
-          </article>
+            product={product}
+            priority={product.id <= 4}
+          />
         ))}
       </section>
     </section>
